@@ -25,7 +25,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
     const menuCollection = client.db('RestaurantsDB').collection('menu');
@@ -96,7 +95,7 @@ async function run() {
       res.send({ admin })
     })
 
-    // verify seller for role
+    // verify seller for specific role here any user not access
 
     app.get('/users/seller/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
@@ -145,7 +144,7 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const updatedDoc = {
         $set: {
-          role: 'admin'
+          role: 'seller'
         }
       }
       const result = await userCollection.updateOne(filter, updatedDoc);
