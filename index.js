@@ -14,7 +14,11 @@ app.use(express.json());
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+// const { ObjectId } = require('mongodb');
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ieebpm5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -25,6 +29,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
     const menuCollection = client.db('RestaurantsDB').collection('menu');
@@ -95,7 +100,7 @@ async function run() {
       res.send({ admin })
     })
 
-    // verify seller for specific role here any user not access
+    // verify seller for role
 
     app.get('/users/seller/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
@@ -205,14 +210,7 @@ async function run() {
       res.send(result);
     })
 
-    // Reviews getting
-    app.get('/review', async (req, res) => {
-      const result = await reviewCollection.find().toArray();
-      res.send(result);
-    })
-
-    // for cart to read
-
+  // for cart to read
     app.get('/carts', async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
@@ -227,7 +225,7 @@ async function run() {
       const result = await cartCollection.insertOne(cartItem);
       res.send(result);
     })
-    // cart get for specific for details project needed
+    // cart get for specific for details 
     app.get('/carts/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -243,6 +241,9 @@ async function run() {
       res.send(result);
 
     })
+
+
+    // here for payment 
     // payment content
     app.post('/create-payment-intent', async (req, res) => {
       const { price } = req.body;
