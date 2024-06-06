@@ -33,9 +33,10 @@ async function run() {
     await client.connect();
 
     const menuCollection = client.db('RestaurantsDB').collection('menu');
+    const cartCollection = client.db('MediMagicDB').collection('carts');
     const userCollection = client.db('MediMagicDB').collection('users');
     const reviewCollection = client.db('RestaurantsDB').collection('reviews');
-    const cartCollection = client.db('MediMagicDB').collection('carts');
+    const cartAddCollection = client.db('MediMagicDB').collection('addCart');
     const paymentCollection = client.db('RestaurantsDB').collection('payments');
 
     // JWT related API
@@ -158,24 +159,24 @@ async function run() {
     });
 
 
-    // menu getting
-    app.get('/menu', async (req, res) => {
-      const result = await menuCollection.find().toArray();
+    // cart getting
+    app.get('/carts', async (req, res) => {
+      const result = await cartCollection.find().toArray();
       res.send(result);
     })
 
-    app.get('/menu/:id', async (req, res) => {
+    app.get('/carts/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await menuCollection.findOne(query);
+      const result = await cartCollection.findOne(query);
       res.send(result);
     })
 
-    // menu create
+    // cart create
 
-    app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
+    app.post('/carts', verifyToken, verifyAdmin, async (req, res) => {
       const item = req.body;
-      const result = await menuCollection.insertOne(item);
+      const result = await cartCollection.insertOne(item);
       res.send(result);
     })
 
@@ -210,33 +211,35 @@ async function run() {
     })
 
   // for cart to read
-    app.get('/carts', async (req, res) => {
+    app.get('/addCart', async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
-      const result = await cartCollection.find(query).toArray();
+      const result = await cartAddCollection.find(query).toArray();
       res.send(result);
     })
 
 
     // For Cart data inserted
-    app.post('/carts', async (req, res) => {
+    app.post('/addCart', async (req, res) => {
       const cartItem = req.body;
-      const result = await cartCollection.insertOne(cartItem);
+      const result = await cartAddCollection.insertOne(cartItem);
       res.send(result);
     })
     // cart get for specific for details 
-    app.get('/carts/:id', async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await cartCollection.findOne(query);
-      res.send(result);
-    })
+
+    // app.get('/carts/:id', async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const result = await cartCollection.findOne(query);
+    //   res.send(result);
+    // })
+
 
     // cart delete operation
-    app.delete('/carts/:id', async (req, res) => {
+    app.delete('/addCart/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
-      const result = await cartCollection.deleteOne(query);
+      const result = await cartAddCollection.deleteOne(query);
       res.send(result);
 
     })
