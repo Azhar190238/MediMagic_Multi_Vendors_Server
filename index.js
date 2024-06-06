@@ -142,22 +142,6 @@ async function run() {
       res.send(result)
     })
 
-    // patch operation specific updated
-
-    // app.patch('/users/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
-    //   const id = req.params.id;
-    //   const filter = { _id: new ObjectId(id) };
-    //   const newRole = user.role === 'seller' ? 'user' : 'seller';
-    //   const updatedDoc = {
-    //     $set: {
-    //       role: 'newRole'
-    //     }
-    //   }
-    //   const result = await userCollection.updateOne(filter, updatedDoc);
-    //   res.send(result);
-
-    // })
- 
     app.patch('/users/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const user = await userCollection.findOne({ _id: new ObjectId(id) });
