@@ -32,12 +32,12 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const menuCollection = client.db('RestaurantsDB').collection('menu');
+    // const menuCollection = client.db('RestaurantsDB').collection('menu');
     const cartCollection = client.db('MediMagicDB').collection('carts');
     const userCollection = client.db('MediMagicDB').collection('users');
-    const reviewCollection = client.db('RestaurantsDB').collection('reviews');
+    const advertiseCollection = client.db('MediMagicDB').collection('advertisement');
     const cartAddCollection = client.db('MediMagicDB').collection('addCart');
-    const paymentCollection = client.db('RestaurantsDB').collection('payments');
+    const paymentCollection = client.db('MediMagicDB').collection('payments');
 
     // JWT related API
 
@@ -174,41 +174,62 @@ async function run() {
 
     // cart create
 
-    app.post('/carts', verifyToken, verifyAdmin, async (req, res) => {
+    app.post('/carts', verifyToken, async (req, res) => {
       const item = req.body;
       const result = await cartCollection.insertOne(item);
       res.send(result);
     })
 
+    // advertisement
+
+    app.post('/advertisement',  async (req, res) => {
+      const item = req.body;
+      const result = await advertiseCollection.insertOne(item);
+      res.send(result);
+    })
+
+    app.get('/advertisement', async (req, res) => {
+      const result = await advertiseCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.get('/advertisement/:id',verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await advertiseCollection.findOne(query);
+      res.send(result);
+    })
+
+
 
     // menu delteded
 
-    app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) }
-      const result = await menuCollection.deleteOne(query);
-      res.send(result);
+    // app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) }
+    //   const result = await menuCollection.deleteOne(query);
+    //   res.send(result);
 
-    })
+    // })
 
     // menu updated
 
-    app.patch('/menu/:id', async (req, res) => {
-      const item = req.body;
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) }
-      const updatedDoc = {
-        $set: {
-          name: item.name,
-          category: item.category,
-          price: item.price,
-          recipe: item.recipe,
-          image: item.image,
-        }
-      }
-      const result = await menuCollection.updateOne(filter, updatedDoc);
-      res.send(result);
-    })
+    // app.patch('/menu/:id', async (req, res) => {
+    //   const item = req.body;
+    //   const id = req.params.id;
+    //   const filter = { _id: new ObjectId(id) }
+    //   const updatedDoc = {
+    //     $set: {
+    //       name: item.name,
+    //       category: item.category,
+    //       price: item.price,
+    //       recipe: item.recipe,
+    //       image: item.image,
+    //     }
+    //   }
+    //   const result = await menuCollection.updateOne(filter, updatedDoc);
+    //   res.send(result);
+    // })
 
   // for cart to read
     app.get('/addCart', async (req, res) => {
@@ -252,7 +273,10 @@ async function run() {
       });
     });
 
-
+    app.get('/payments', async (req, res) => {
+      const result = await paymentCollection.find().toArray();
+      res.send(result);
+    })
 
     app.get('/payments/:email', verifyToken, async(req,res)=>{
       const query = {email: req.params.email};
@@ -277,6 +301,23 @@ async function run() {
       const deleteResult = await cartCollection.deleteMany(query)
       res.send({paymentResult, deleteResult})
     })
+
+// admin modify status pending converted paid
+
+    app.patch('/payments/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const status = await paymentCollection.findOne({ _id: new ObjectId(id) });
+      const newStatus = status.status === 'paid' ? 'pending' : 'paid';
+    
+      const updatedDoc = {
+        $set: {
+          status: newStatus
+        }
+      };
+    
+      const result = await paymentCollection.updateOne({ _id: new ObjectId(id) }, updatedDoc);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
