@@ -180,19 +180,20 @@ async function run() {
       res.send(result);
     })
 
-    // advertisement
+    // advertisement create
 
     app.post('/advertisement',  async (req, res) => {
       const item = req.body;
       const result = await advertiseCollection.insertOne(item);
       res.send(result);
     })
-
+   // all advertisement get 
     app.get('/advertisement', async (req, res) => {
       const result = await advertiseCollection.find().toArray();
       res.send(result);
     })
-
+  // specific email get all data 
+  
     app.get('/advertisement/:id',verifyToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
