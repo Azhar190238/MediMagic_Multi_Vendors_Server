@@ -193,13 +193,44 @@ async function run() {
       res.send(result);
     })
   // specific email get all data 
-  
+
     app.get('/advertisement/:id',verifyToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await advertiseCollection.findOne(query);
       res.send(result);
     })
+  
+     // admin changed the status
+    // app.patch('/advertisement/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
+    //   const id = req.params.id;
+    //   const user = await advertiseCollection.findOne({ _id: new ObjectId(id) });
+    //   const newStatus = user.status === 'advertise-pending' ? 'Add' : 'remove';
+    
+    //   const updatedDoc = {
+    //     $set: {
+    //       status: newStatus 
+    //     }
+    //   };
+    
+    //   const result = await advertiseCollection.updateOne({ _id: new ObjectId(id) }, updatedDoc);
+    //   res.send(result);
+    // });
+    app.patch('/advertisement/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const user = await advertiseCollection.findOne({ _id: new ObjectId(id) });
+      const newStatus = user.status === 'advertise-pending' ? 'advertised' : 'advertise-pending';  // Change status to 'advertised' or 'advertise-pending'
+  
+      const updatedDoc = {
+          $set: {
+              status: newStatus 
+          }
+      };
+  
+      const result = await advertiseCollection.updateOne({ _id: new ObjectId(id) }, updatedDoc);
+      res.send(result);
+  });
+  
 
 
 
