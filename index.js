@@ -200,22 +200,6 @@ async function run() {
       const result = await advertiseCollection.findOne(query);
       res.send(result);
     })
-  
-     // admin changed the status
-    // app.patch('/advertisement/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
-    //   const id = req.params.id;
-    //   const user = await advertiseCollection.findOne({ _id: new ObjectId(id) });
-    //   const newStatus = user.status === 'advertise-pending' ? 'Add' : 'remove';
-    
-    //   const updatedDoc = {
-    //     $set: {
-    //       status: newStatus 
-    //     }
-    //   };
-    
-    //   const result = await advertiseCollection.updateOne({ _id: new ObjectId(id) }, updatedDoc);
-    //   res.send(result);
-    // });
     app.patch('/advertisement/admin/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const user = await advertiseCollection.findOne({ _id: new ObjectId(id) });
