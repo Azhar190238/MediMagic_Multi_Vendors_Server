@@ -36,6 +36,7 @@ async function run() {
     const cartCollection = client.db('MediMagicDB').collection('carts');
     const userCollection = client.db('MediMagicDB').collection('users');
     const advertiseCollection = client.db('MediMagicDB').collection('advertisement');
+    const categoriesCollection = client.db('MediMagicDB').collection('categories');
     const cartAddCollection = client.db('MediMagicDB').collection('addCart');
     const paymentCollection = client.db('MediMagicDB').collection('payments');
 
@@ -178,6 +179,26 @@ async function run() {
       const item = req.body;
       const result = await cartCollection.insertOne(item);
       res.send(result);
+    })
+
+      // categories getting
+      app.get('/categories', async (req, res) => {
+        const result = await categoriesCollection.find().toArray();
+        res.send(result);
+      })
+
+    // insert categories 
+    app.post('/categories', verifyToken, async (req, res) => {
+      const item = req.body;
+      const result = await categoriesCollection.insertOne(item);
+      res.send(result);
+    })
+  // categories delete
+    app.delete('/categories/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await categoriesCollection.deleteOne(query);
+      res.send(result)
     })
 
     // advertisement create
