@@ -200,7 +200,7 @@ async function run() {
       const result = await categoriesCollection.deleteOne(query);
       res.send(result)
     })
-    
+
   // categories updated
     app.patch('/categories/:id', async (req, res) => {
       const item = req.body;
@@ -208,14 +208,22 @@ async function run() {
       const filter = { _id: new ObjectId(id) }
       const updatedDoc = {
         $set: {
-          categoryName: item.categoryName,
           image: item.image,
+          categoryName: item.categoryName,
         }
       }
       const result = await categoriesCollection.updateOne(filter, updatedDoc);
       res.send(result);
     })
 
+
+    // 
+    app.get('/categories/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await categoriesCollection.findOne(query);
+      res.send(result);
+    })
     // advertisement create
 
     app.post('/advertisement',  async (req, res) => {
